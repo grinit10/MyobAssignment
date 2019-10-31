@@ -1,6 +1,7 @@
 using API.Extensions;
 using BL;
 using Contract;
+using DAL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +41,8 @@ namespace API
             services.AddControllers();
             services.AddTransient<CustomLoggingExceptionFilter>();
             services.AddTransient(typeof(IPayslipManager), typeof(PayslipManager))
-                .AddTransient(typeof(ITaxYearManager), typeof(TaxYearManager));
+                .AddTransient(typeof(ITaxYearManager), typeof(TaxYearManager))
+                .AddSingleton(typeof(ICsvDal<>), typeof(CsvDal<>));
             services.Configure<TaxTable>(Configuration.GetSection("TaxTable"));
         }
 

@@ -12,7 +12,7 @@ namespace BL
             _taxYearManager = taxYearManager;
         }
 
-        public IPayslipDetails GeneratePayslip(IEmployeeDetails employeeDetails) => new PayslipDetails()
+        public PayslipDetails GeneratePayslip(IEmployeeDetails employeeDetails) => new PayslipDetails()
         {
             PayPeriod = employeeDetails.PaymentStartDate,
             Name = $"{employeeDetails.FirstName} {employeeDetails.LastName}",

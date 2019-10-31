@@ -1,6 +1,10 @@
-﻿using API.Extensions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using API.Extensions;
 using BL;
 using Contract;
+using DAL;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -11,10 +15,14 @@ namespace API.Controllers
     public class PayslipController : ControllerBase
     {
         private readonly IPayslipManager _payslipManager;
+        private readonly ICsvDal<EmployeeDetails> _empCsvDal;
+        private readonly ICsvDal<PayslipDetails> _payCsvDal;
 
-        public PayslipController(IPayslipManager payslipManager)
+        public PayslipController(IPayslipManager payslipManager, ICsvDal<EmployeeDetails> empCsvDal, ICsvDal<PayslipDetails> payCsvDal)
         {
             _payslipManager = payslipManager;
+            _empCsvDal = empCsvDal;
+            _payCsvDal = payCsvDal;
         }
 
         [HttpGet("HealthCheck")]
@@ -23,19 +31,19 @@ namespace API.Controllers
             return Ok("It is healthy");
         }
 
-        [HttpGet]
-        public IActionResult Get(string firstName, string lastName, double annualSalary, double superRate,
-            string paymentStartDate)
+        [HttpPost]
+        public IActionResult ProcessFiles(IFormFile file)
         {
-            var empDetails = new EmployeeDetails()
+            IList<PayslipDetails> payslips = new List<PayslipDetails>();
+            var empDetails = _empCsvDal.ReadCsv(file);
+            empDetails.ToList().ForEach(e =>
             {
-                FirstName = firstName,
-                LastName = lastName,
-                AnnualSalary = annualSalary,
-                SuperRate = superRate,
-                PaymentStartDate = paymentStartDate
-            };
-            return TryValidateModel(empDetails) ? Ok(_payslipManager.GeneratePayslip(empDetails)) : ValidationProblem();
+                if (TryValidateModel(e))
+                    payslips.Add(_payslipManager.GeneratePayslip(e));
+                else
+                    ValidationProblem();
+            });
+            return File(_payCsvDal.WriteCsv(payslips), "application/csv", "Payslips.csv");
         }
     }
 }

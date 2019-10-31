@@ -4,6 +4,6 @@ namespace BL
 {
     public interface IPayslipManager
     {
-        IPayslipDetails GeneratePayslip(IEmployeeDetails employeeDetails);
+        PayslipDetails GeneratePayslip(IEmployeeDetails employeeDetails);
     }
 }

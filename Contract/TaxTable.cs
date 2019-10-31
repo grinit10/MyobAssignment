@@ -19,7 +19,7 @@ namespace Contract
             TaxSlabs = new List<TaxSlab>();
         }
 
-        public int Year { get; private set; }
+        public int Year { get; set; }
         public IList<TaxSlab> TaxSlabs { get; private set; }
     }
     public class TaxSlab
