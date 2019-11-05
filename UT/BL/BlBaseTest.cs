@@ -19,7 +19,57 @@ namespace UT.BL
         {
             base.SetUp();
             EmployeeDetails = BaseFixture.Create<EmployeeDetails>();
-            TaxTable = BaseFixture.Create<IOptions<TaxTable>>();
+            EmployeeDetails.AnnualSalary = 60050;
+            EmployeeDetails.SuperRate = 9;
+            var taxTable = new TaxTable()
+            {
+                TaxYears =
+                {
+                    new TaxYear()
+                    {
+                        Year = 2019,
+                        TaxSlabs =
+                        {
+                            new TaxSlab()
+                            {
+                                Base = 0,
+                                Rate = 0,
+                                LowerLimit = 0,
+                                UpperLimit = 18200
+                            },
+                            new TaxSlab()
+                            {
+                                Base = 0,
+                                Rate = 19,
+                                LowerLimit = 18201,
+                                UpperLimit = 37000
+                            },
+                            new TaxSlab()
+                            {
+                                Base = 3572,
+                                Rate = 32.5,
+                                LowerLimit = 37001,
+                                UpperLimit = 87000
+                            },
+                            new TaxSlab()
+                            {
+                                Base = 19822,
+                                Rate = 37,
+                                LowerLimit = 87001,
+                                UpperLimit = 180000
+                            },
+                            new TaxSlab()
+                            {
+                                Base = 54232,
+                                Rate = 45,
+                                LowerLimit = 180001,
+                                UpperLimit = 1000000
+                            }
+                        }
+                    }
+                }
+            };
+            TaxTable = Options.Create(taxTable);
             Logger = BaseFixture.Create<ILogger<ITaxYearManager>>();
         }
     }

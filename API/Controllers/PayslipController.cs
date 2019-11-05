@@ -35,8 +35,7 @@ namespace API.Controllers
         public IActionResult ProcessFiles(IFormFile file)
         {
             IList<PayslipDetails> payslips = new List<PayslipDetails>();
-            var empDetails = _empCsvDal.ReadCsv(file);
-            empDetails.ToList().ForEach(e =>
+            _empCsvDal.ReadCsv(file).ToList().ForEach(e =>
             {
                 if (TryValidateModel(e))
                     payslips.Add(_payslipManager.GeneratePayslip(e));

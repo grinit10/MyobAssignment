@@ -1,7 +1,6 @@
 using System.Linq;
 using AutoFixture;
 using AutoFixture.AutoMoq;
-using NUnit.Framework;
 
 namespace UT
 {
