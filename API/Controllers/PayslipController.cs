@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using API.Extensions;
 using BL;
@@ -12,6 +13,7 @@ namespace API.Controllers
     [ApiController]
     [ServiceFilter(typeof(CustomLoggingExceptionFilter))]
     [Route("[controller]")]
+    [ValidateModelAttribute]
     public class PayslipController : ControllerBase
     {
         private readonly IPayslipManager _payslipManager;
@@ -25,12 +27,6 @@ namespace API.Controllers
             _payCsvDal = payCsvDal;
         }
 
-        [HttpGet("HealthCheck")]
-        public IActionResult Get()
-        {
-            return Ok("It is healthy");
-        }
-
         [HttpPost]
         public IActionResult ProcessFiles(IFormFile file)
         {
@@ -38,10 +34,12 @@ namespace API.Controllers
             _empCsvDal.ReadCsv(file).ToList().ForEach(e =>
             {
                 if (TryValidateModel(e))
+                {
                     payslips.Add(_payslipManager.GeneratePayslip(e));
-                else
-                    ValidationProblem();
+                }
             });
+            if(!ModelState.IsValid)
+                return new ValidationFailedResult(ModelState);
             return File(_payCsvDal.WriteCsv(payslips), "application/csv", "Payslips.csv");
         }
     }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BL;
-using Contract;
 using Moq;
 using NUnit.Framework;
 
